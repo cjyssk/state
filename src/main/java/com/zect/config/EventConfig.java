@@ -13,23 +13,28 @@ import org.springframework.statemachine.transition.Transition;
 @WithStateMachine(id = "activityStateMachineId")
 public class EventConfig {
 
-    private String status = States.DRAFT.getValue();
-
     @OnTransition(target = "DRAFT")
     public void save() {
         System.out.println("-------保存，"+States.DRAFT.getValue());
     }
 
     @OnTransition(source = "DRAFT", target = "UN_AUDIT")
-    public void commit() {
+    public void commit(Message<Events> message) {
+        System.out.println("传参：" + message.getHeaders().get("activity").toString());
         System.out.println("---------提交，"+States.UN_AUDIT.getValue());
     }
 
+    /**
+     * 不会执行
+     */
     @OnTransition(source = "UN_AUDIT", target = "UN_START")
     public void auditPass() {
         System.out.println("---------审核通过，"+States.UN_START.getValue());
     }
 
+    /**
+     * 不会执行
+     */
     @OnTransition(source = "UN_AUDIT", target = "REFUSED")
     public void auditRefused() {
         System.out.println("---------审核拒绝，"+States.REFUSED.getValue());

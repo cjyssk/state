@@ -22,7 +22,6 @@ public class StateConfig extends EnumStateMachineConfigurerAdapter<States, Event
                 .withStates()
                 .initial(States.DRAFT)
                 .choice(States.UN_AUDIT)
-                .choice(States.UN_START)
                 .states(EnumSet.allOf(States.class));
     }
 
@@ -45,11 +44,10 @@ public class StateConfig extends EnumStateMachineConfigurerAdapter<States, Event
         transitions
                 .withExternal().source(States.DRAFT).target(States.UN_AUDIT).event(Events.SUBMIT)
                 .and().withChoice().source(States.UN_AUDIT).first(States.UN_START, new AuditChoiceGuard()).last(States.REFUSED)
-                .and().withChoice().source(States.UN_START).first(States.IN_PROGRESS, new SatrtChoiceGuard()).last(States.UN_START)
+                .and().withExternal().source(States.UN_START).target(States.IN_PROGRESS).event(Events.ChECK_START).guard(new StartChoiceGuard())
                 .and().withExternal().source(States.UN_START).target(States.PAUSED).event(Events.PAUSE)
                 .and().withExternal().source(States.IN_PROGRESS).target(States.PAUSED).event(Events.PAUSE)
                 .and().withExternal().source(States.PAUSED).target(States.UN_START).event(Events.CONTINUE)
-                .and().withExternal().source(States.PAUSED).target(States.IN_PROGRESS).event(Events.CONTINUE)
                 .and().withExternal().source(States.UN_START).target(States.STOP).event(Events.TERMINATE)
                 .and().withExternal().source(States.IN_PROGRESS).target(States.STOP).event(Events.TERMINATE)
                 .and().withExternal().source(States.PAUSED).target(States.STOP).event(Events.TERMINATE)
