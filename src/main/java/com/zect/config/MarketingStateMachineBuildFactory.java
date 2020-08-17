@@ -3,20 +3,19 @@ package com.zect.config;
 import com.google.common.collect.Maps;
 import com.zect.domain.ActivityEvents;
 import com.zect.domain.ActivityStates;
-import com.zect.domain.ActivityTypeEnum;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.statemachine.StateMachine;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import static com.zect.config.MarketingStateMachineBuilder.ACTIVITY_BUILDER_NAME;
 
-
+@Component
 public class MarketingStateMachineBuildFactory implements InitializingBean {
 
     @Autowired
@@ -33,28 +32,18 @@ public class MarketingStateMachineBuildFactory implements InitializingBean {
     /**
      * 用于存储bizType+subBizType 与 builder-name的集合
      */
-    private Map<String, String> bizTypeBuilderMap = Maps.newConcurrentMap();
+    //private Map<String, String> bizTypeBuilderMap = Maps.newConcurrentMap();
 
     /*public StateMachine<ActivityStates, ActivityEvents> createStateMachine(String bizType, String subBizType) {
-        if (StringUtils.isBlank(subBizType)) {
-            subBizType = "";
-        }
-        String key = StringUtils.trim(bizType) + StringUtils.trim(subBizType);
-
-        String builderName = bizTypeBuilderMap.get(key);
-        if (StringUtils.isBlank(builderName)) {
-            //throw new Exception(ExceptionCodeEnum.NO_CORRESPONDING_STATEMACHINE_BUILDER, "当前业务没有对应的状态机配置，请检查");
-            System.out.println("当前业务没有对应的状态机配置，请检查");
-        }
-
+        String key = bizType.trim();
+        String builderName = bizTypeBuilderMap.get(bizType);
         return createStateMachine(builderName);
     }*/
 
     public StateMachine<ActivityStates, ActivityEvents> createStateMachine(String builderName) {
 
         System.out.println("创建状态机模板");
-        MarketingStateMachineBuilder builder =
-                builderMap.get(builderName);
+        MarketingStateMachineBuilder builder = builderMap.get(builderName);
 
         StateMachine<ActivityStates, ActivityEvents> stateMachine = null;
         try {
@@ -78,6 +67,6 @@ public class MarketingStateMachineBuildFactory implements InitializingBean {
         // 暂时将bizType和subBizType XXX-单笔授信作为key，绑定对应的XXX状态机，后续还需要绑定别的业务
         //bizTypeBuilderMap.put(BizOrderBizTypeEnum.EMPLOAN.getOrderBizType(), ACTIVITY_BUILDER_NAME);
         // XXX 不区分子业务类型
-        bizTypeBuilderMap.put(ActivityTypeEnum.PLATFORM.getId(), ACTIVITY_BUILDER_NAME);
+        //bizTypeBuilderMap.put(ActivityTypeEnum.PLATFORM.getId(), ACTIVITY_BUILDER_NAME);
     }
 }

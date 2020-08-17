@@ -1,17 +1,14 @@
 package com.zect.controller;
 
 import com.zect.config.MarketingStateMachineBuildFactory;
-import com.zect.config.MarketingStateMachineBuilder;
 import com.zect.domain.ActivityDTO;
 import com.zect.domain.ActivityEvents;
 import com.zect.domain.ActivityStates;
 import com.zect.util.DateUtils;
-import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.statemachine.StateMachine;
-import org.springframework.statemachine.config.StateMachineFactory;
 import org.springframework.statemachine.persist.StateMachinePersister;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -24,12 +21,8 @@ import java.util.Date;
 @RestController
 public class TestController {
 
-
     @Autowired
-    private MarketingStateMachineBuilder marketingStateMachineBuilder;
-
-    @Autowired
-    private BeanFactory beanFactory;
+    private MarketingStateMachineBuildFactory marketingStateMachineBuildFactory;
 
     /*@Resource
     private StateMachineFactory<ActivityStates, ActivityEvents> stateMachineFactory;*/
@@ -50,9 +43,7 @@ public class TestController {
 
         System.out.println("---------------------------------活动1------------------------------");
 
-        StateMachine<ActivityStates, ActivityEvents> stateMachine = marketingStateMachineBuilder.build(beanFactory);
-                //stateMachineFactory.getStateMachine();
-
+        StateMachine<ActivityStates, ActivityEvents> stateMachine = marketingStateMachineBuildFactory.createStateMachine("activityStateMachineBuilder");
 
         ActivityDTO activity1 = new ActivityDTO();
         activity1.setId(1);
@@ -112,7 +103,8 @@ public class TestController {
         activity3.setStartTime(new Date());
         */
 
-        stateMachine = marketingStateMachineBuilder.build(beanFactory);
+        stateMachine = marketingStateMachineBuildFactory.createStateMachine("activityStateMachineBuilder");
+
         //stateMachine = stateMachineFactory.getStateMachine();
         stateMachine.start();
         message = MessageBuilder.withPayload(ActivityEvents.EVT_SUBMIT).setHeader("activity", activity2).build();
@@ -149,9 +141,7 @@ public class TestController {
 
         System.out.println("---------------------------------活动1------------------------------");
 
-        StateMachine<ActivityStates, ActivityEvents> stateMachine = marketingStateMachineBuilder.build(beanFactory);
-        //StateMachine<ActivityStates, ActivityEvents> stateMachine = stateMachineFactory.getStateMachine("activityMachine");
-
+        StateMachine<ActivityStates, ActivityEvents> stateMachine = marketingStateMachineBuildFactory.createStateMachine("activityStateMachineBuilder");
 
         ActivityDTO activity1 = new ActivityDTO();
         activity1.setId(1);
@@ -211,7 +201,8 @@ public class TestController {
         activity3.setStartTime(new Date());
         */
 
-        stateMachine = marketingStateMachineBuilder.build(beanFactory);
+        stateMachine = marketingStateMachineBuildFactory.createStateMachine("activityStateMachineBuilder");
+
         //stateMachine = stateMachineFactory.getStateMachine("");
         persister.restore(stateMachine, activity2);
         /*message = MessageBuilder.withPayload(ActivityEvents.EVT_SUBMIT).setHeader("activity", activity2).build();

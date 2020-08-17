@@ -58,7 +58,7 @@ public class ActivityStateMachineBuilder extends EnumStateMachineConfigurerAdapt
                 .and().withExternal().source(UN_AUDIT).target(REFUSED).event(EVT_AUDIT_REFUSE)
                 //.and().withChoice().source(UN_AUDIT).first(UN_START, new AuditChoiceGuard()).last(REFUSED)
                 //审核通过检查活动是否已开始
-                //.and().withExternal().source(UN_START).target(IN_PROGRESS).event(CHECK_START).guard(new StartChoiceGuard())
+                .and().withExternal().source(UN_START).target(IN_PROGRESS).event(EVT_CHECK_START).guard(startChoiceGurad())
                 /**
                  * 活动暂停
                  * source:未开始、活动中
@@ -108,10 +108,10 @@ public class ActivityStateMachineBuilder extends EnumStateMachineConfigurerAdapt
             System.out.println("StartChoiceGuard!!!!!!!活动是否已开始!!!!!!");
             ActivityDTO activity = context.getMessageHeaders().get("activity", ActivityDTO.class);
             if (activity.getStartTime().compareTo(now) < 0) {
-                System.out.println("false");
+                System.out.println("true");
                 return true;
             }
-            System.out.println("true");
+            System.out.println("false");
             return false;
         };
     }
