@@ -53,7 +53,8 @@ public class MarketingStateMachineBuildFactory implements InitializingBean {
     public StateMachine<ActivityStates, ActivityEvents> createStateMachine(String builderName) {
 
         System.out.println("创建状态机模板");
-        MarketingStateMachineBuilder builder = builderMap.get(builderName);
+        MarketingStateMachineBuilder builder =
+                builderMap.get(builderName);
 
         StateMachine<ActivityStates, ActivityEvents> stateMachine = null;
         try {
