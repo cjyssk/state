@@ -1,8 +1,6 @@
 package com.zect.util;
 
-import com.zect.domain.States;
 
-import java.lang.reflect.Method;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -26,7 +24,4 @@ public class DateUtils {
         return Date.from(instant);
     }
 
-    public static void main(String[] args)throws Exception {
-        System.out.println(States.getStateById("1"));
-    }
 }

@@ -1,8 +1,8 @@
 package com.zect.controller;
 
 import com.zect.domain.ActivityDTO;
-import com.zect.domain.Events;
-import com.zect.domain.States;
+import com.zect.domain.ActivityEvents;
+import com.zect.domain.ActivityStates;
 import com.zect.util.DateUtils;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.support.MessageBuilder;
@@ -21,10 +21,10 @@ import java.util.Date;
 public class TestController {
 
     @Resource
-    private StateMachineFactory<States, Events> stateMachineFactory;
+    private StateMachineFactory<ActivityStates, ActivityEvents> stateMachineFactory;
 
     @Resource(name="activityPersister")
-    private StateMachinePersister<States, Events, ActivityDTO> persister;
+    private StateMachinePersister<ActivityStates, ActivityEvents, ActivityDTO> persister;
 
 
     Date startTime = DateUtils.strToDate("2020-08-15 19:00:10");
@@ -39,7 +39,7 @@ public class TestController {
 
         System.out.println("---------------------------------活动1------------------------------");
 
-        StateMachine<States, Events> stateMachine = stateMachineFactory.getStateMachine();
+        StateMachine<ActivityStates, ActivityEvents> stateMachine = stateMachineFactory.getStateMachine();
 
 
         ActivityDTO activity1 = new ActivityDTO();
@@ -60,30 +60,30 @@ public class TestController {
 
         System.out.println("当前状态：" + stateMachine.getState().getId());
 
-        Message message = MessageBuilder.withPayload(Events.SUBMIT).setHeader("activity", activity1).build();
+        Message message = MessageBuilder.withPayload(ActivityEvents.EVT_SUBMIT).setHeader("activity", activity1).build();
         stateMachine.sendEvent(message);
 
-        message = MessageBuilder.withPayload(Events.AUDIT).setHeader("activity", activity1).build();
+        message = MessageBuilder.withPayload(ActivityEvents.EVT_AUDIT_APPROVED).setHeader("activity", activity1).build();
         stateMachine.sendEvent(message);
         System.out.println("审核后，当前状态：" + stateMachine.getState().getId());
 
-        message = MessageBuilder.withPayload(Events.ChECK_START).setHeader("activity", activity1).build();
+        message = MessageBuilder.withPayload(ActivityEvents.EVT_CHECK_START).setHeader("activity", activity1).build();
         stateMachine.sendEvent(message);
         System.out.println("检查活动开始后，当前状态：" + stateMachine.getState().getId());
 
-        message = MessageBuilder.withPayload(Events.PAUSE).setHeader("activity", activity1).build();
+        message = MessageBuilder.withPayload(ActivityEvents.EVT_PAUSE).setHeader("activity", activity1).build();
         stateMachine.sendEvent(message);
         System.out.println("暂停后，当前状态：" + stateMachine.getState().getId());
 
-        message = MessageBuilder.withPayload(Events.CONTINUE).setHeader("activity", activity1).build();
+        message = MessageBuilder.withPayload(ActivityEvents.EVT_CONTINUE).setHeader("activity", activity1).build();
         stateMachine.sendEvent(message);
         System.out.println("继续，当前状态：" + stateMachine.getState().getId());
 
-        message = MessageBuilder.withPayload(Events.ChECK_START).setHeader("activity", activity1).build();
+        message = MessageBuilder.withPayload(ActivityEvents.EVT_CHECK_START).setHeader("activity", activity1).build();
         stateMachine.sendEvent(message);
         /*System.out.println("当前状态：" + stateMachine.getState().getId());
 
-        message = MessageBuilder.withPayload(Events.TERMINATE).setHeader("activity", activity1).build();
+        message = MessageBuilder.withPayload(ActivityEvents.EVT_TERMINATE).setHeader("activity", activity1).build();
         stateMachine.sendEvent(message);*/
         System.out.println("最终状态：" + stateMachine.getState().getId());
 
@@ -101,28 +101,28 @@ public class TestController {
         */
         stateMachine = stateMachineFactory.getStateMachine();
         stateMachine.start();
-        message = MessageBuilder.withPayload(Events.SUBMIT).setHeader("activity", activity2).build();
+        message = MessageBuilder.withPayload(ActivityEvents.EVT_SUBMIT).setHeader("activity", activity2).build();
         stateMachine.sendEvent(message);
         System.out.println("提交后，当前状态：" + stateMachine.getState().getId());
 
         //activity1.setStatus(5);//待审核
-        message = MessageBuilder.withPayload(Events.AUDIT).setHeader("activity", activity2).build();
+        message = MessageBuilder.withPayload(ActivityEvents.EVT_AUDIT_APPROVED).setHeader("activity", activity2).build();
         stateMachine.sendEvent(message);
         System.out.println("审核后，当前状态：" + stateMachine.getState().getId());
 
-        message = MessageBuilder.withPayload(Events.ChECK_START).setHeader("activity", activity2).build();
+        message = MessageBuilder.withPayload(ActivityEvents.EVT_CHECK_START).setHeader("activity", activity2).build();
         stateMachine.sendEvent(message);
         System.out.println("检查活动开始，当前状态：" + stateMachine.getState().getId());
 
-        message = MessageBuilder.withPayload(Events.PAUSE).setHeader("activity", activity2).build();
+        message = MessageBuilder.withPayload(ActivityEvents.EVT_PAUSE).setHeader("activity", activity2).build();
         stateMachine.sendEvent(message);
         /*System.out.println("当前状态：" + stateMachine.getState().getId());
 
-        message = MessageBuilder.withPayload(Events.CONTINUE).setHeader("activity", activity2).build();
+        message = MessageBuilder.withPayload(ActivityEvents.EVT_CONTINUE).setHeader("activity", activity2).build();
         stateMachine.sendEvent(message);
         System.out.println("当前状态：" + stateMachine.getState().getId());
 
-        message = MessageBuilder.withPayload(Events.TERMINATE).setHeader("activity", activity2).build();
+        message = MessageBuilder.withPayload(ActivityEvents.EVT_TERMINATE).setHeader("activity", activity2).build();
         stateMachine.sendEvent(message);*/
         System.out.println("最终状态：" + stateMachine.getState().getId());
 
@@ -135,7 +135,7 @@ public class TestController {
 
         System.out.println("---------------------------------活动1------------------------------");
 
-        StateMachine<States, Events> stateMachine = stateMachineFactory.getStateMachine("activityMachine");
+        StateMachine<ActivityStates, ActivityEvents> stateMachine = stateMachineFactory.getStateMachine("activityMachine");
 
 
         ActivityDTO activity1 = new ActivityDTO();
@@ -155,31 +155,31 @@ public class TestController {
         persister.restore(stateMachine, activity1);
 
         /*activity1.setStatus(6);//已拒绝
-        Message message = MessageBuilder.withPayload(Events.SUBMIT).setHeader("activity", activity1).build();
+        Message message = MessageBuilder.withPayload(ActivityEvents.EVT_SUBMIT).setHeader("activity", activity1).build();
         stateMachine.sendEvent(message);
         System.out.println("当前状态：" + stateMachine.getState().getId());
 
-        message = MessageBuilder.withPayload(Events.AUDIT).setHeader("activity", activity1).build();
+        message = MessageBuilder.withPayload(ActivityEvents.EVT_AUDIT).setHeader("activity", activity1).build();
         stateMachine.sendEvent(message);*/
         System.out.println("当前状态：" + stateMachine.getState().getId());
 
-        Message message = MessageBuilder.withPayload(Events.ChECK_START).setHeader("activity", activity1).build();
+        Message message = MessageBuilder.withPayload(ActivityEvents.EVT_CHECK_START).setHeader("activity", activity1).build();
         stateMachine.sendEvent(message);
         System.out.println("检查活动开始，当前状态：" + stateMachine.getState().getId());
 
-        message = MessageBuilder.withPayload(Events.PAUSE).setHeader("activity", activity1).build();
+        message = MessageBuilder.withPayload(ActivityEvents.EVT_PAUSE).setHeader("activity", activity1).build();
         stateMachine.sendEvent(message);
         System.out.println("暂停后，当前状态：" + stateMachine.getState().getId());
 
-        message = MessageBuilder.withPayload(Events.CONTINUE).setHeader("activity", activity1).build();
+        message = MessageBuilder.withPayload(ActivityEvents.EVT_CONTINUE).setHeader("activity", activity1).build();
         stateMachine.sendEvent(message);
         System.out.println("继续，当前状态：" + stateMachine.getState().getId());
 
-        message = MessageBuilder.withPayload(Events.ChECK_START).setHeader("activity", activity1).build();
+        message = MessageBuilder.withPayload(ActivityEvents.EVT_CHECK_START).setHeader("activity", activity1).build();
         stateMachine.sendEvent(message);
         System.out.println("检查活动开始，当前状态：" + stateMachine.getState().getId());
 
-        message = MessageBuilder.withPayload(Events.TERMINATE).setHeader("activity", activity1).build();
+        message = MessageBuilder.withPayload(ActivityEvents.EVT_TERMINATE).setHeader("activity", activity1).build();
         stateMachine.sendEvent(message);
         System.out.println("最终状态：" + stateMachine.getState().getId());
 
@@ -198,35 +198,35 @@ public class TestController {
 
         stateMachine = stateMachineFactory.getStateMachine("");
         persister.restore(stateMachine, activity2);
-        /*message = MessageBuilder.withPayload(Events.SUBMIT).setHeader("activity", activity2).build();
+        /*message = MessageBuilder.withPayload(ActivityEvents.EVT_SUBMIT).setHeader("activity", activity2).build();
         stateMachine.sendEvent(message);
         System.out.println("当前状态：" + stateMachine.getState().getId());
 
         activity1.setStatus(5);//待审核
-        message = MessageBuilder.withPayload(Events.AUDIT).setHeader("activity", activity2).build();
+        message = MessageBuilder.withPayload(ActivityEvents.EVT_AUDIT).setHeader("activity", activity2).build();
         stateMachine.sendEvent(message);
         System.out.println("当前状态：" + stateMachine.getState().getId());
 
-        message = MessageBuilder.withPayload(Events.ChECK_START).setHeader("activity", activity2).build();
+        message = MessageBuilder.withPayload(ActivityEvents.EVT_ChECK_START).setHeader("activity", activity2).build();
         stateMachine.sendEvent(message);
         System.out.println("当前状态：" + stateMachine.getState().getId());
 
-        message = MessageBuilder.withPayload(Events.PAUSE).setHeader("activity", activity2).build();
+        message = MessageBuilder.withPayload(ActivityEvents.EVT_PAUSE).setHeader("activity", activity2).build();
         stateMachine.sendEvent(message);
         System.out.println("当前状态：" + stateMachine.getState().getId());*/
 
 
         System.out.println("当前状态：" + stateMachine.getState().getId());
 
-        message = MessageBuilder.withPayload(Events.CONTINUE).setHeader("activity", activity2).build();
+        message = MessageBuilder.withPayload(ActivityEvents.EVT_CONTINUE).setHeader("activity", activity2).build();
         stateMachine.sendEvent(message);
         System.out.println("当前状态：" + stateMachine.getState().getId());
 
-        message = MessageBuilder.withPayload(Events.ChECK_START).setHeader("activity", activity2).build();
+        message = MessageBuilder.withPayload(ActivityEvents.EVT_CHECK_START).setHeader("activity", activity2).build();
         stateMachine.sendEvent(message);
         System.out.println("当前状态：" + stateMachine.getState().getId());
 
-        message = MessageBuilder.withPayload(Events.TERMINATE).setHeader("activity", activity2).build();
+        message = MessageBuilder.withPayload(ActivityEvents.EVT_TERMINATE).setHeader("activity", activity2).build();
         stateMachine.sendEvent(message);
         System.out.println("最终状态：" + stateMachine.getState().getId());
 
